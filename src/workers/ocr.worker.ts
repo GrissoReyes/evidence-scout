@@ -23,20 +23,20 @@ self.onmessage = async (e: MessageEvent) => {
     // The spec acknowledges: "All three files MUST live in /public/tesseract/ and be referenced via workerPath, corePath, and langPath configuration options". 
     // Let's use the local paths as fallback and try to use blob urls for worker and core.
     
-    // Fallback paths
-    workerPath = workerPath || '/tesseract/worker.min.js';
-    corePath = corePath || '/tesseract/tesseract-core.wasm.js';
-    
-    // For langPath, using a blob URL as a prefix doesn't work for Tesseract, so we typically rely on service worker caching the network request to `/tesseract/eng.traineddata`.
-    // However, to strictly follow the spec: we will pass the blob URL if we can, but it will fail unless Tesseract handles it.
-    // Actually, Tesseract v5 allows `langPath` to be the exact URL if we load it specially, but usually `langPath` is the directory.
-    // We will use '/tesseract/' for langPath as instructed: "langPath: '/tesseract/' (Tesseract will look for eng.traineddata inside this path)".
-    const langPath = '/tesseract/';
+    // Build absolute URLs so that importScripts() inside the Web Worker resolves them
+    // correctly regardless of whether the worker is running from a blob: URL.
+    // A bare '/tesseract/...' path is treated as relative to the worker's own origin
+    // (blob:) and fails. Using self.location.origin produces a fully-qualified http(s): URL.
+    const _origin = (self as any).location.origin;
+    workerPath = workerPath || `${_origin}/tesseract/worker.min.js`;
+    corePath = corePath || `${_origin}/tesseract/tesseract-core.wasm.js`;
+    const langPath = `${_origin}/tesseract/`;
 
     const worker = await createWorker('eng', 1, {
       workerPath,
       corePath,
       langPath,
+      gzip: false,  // public/tesseract/eng.traineddata is uncompressed; default gzip:true appends .gz causing a 404
       logger: m => console.log(m)
     });
 

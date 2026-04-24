@@ -23,7 +23,14 @@ export default function ResultsList({ results, hasSearched }: Props) {
       {results.map((result, idx) => (
         <div key={idx} className="bg-white p-5 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
           <div className="flex justify-between items-start mb-2">
-            <h3 className="text-lg font-medium text-teal-700">{result.title}</h3>
+            <a 
+              href={result.url} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-lg font-medium text-teal-700 hover:text-teal-900 hover:underline"
+            >
+              {result.title}
+            </a>
             <span className="text-xs font-mono bg-teal-50 text-teal-700 px-2 py-1 rounded">
               {(result.score * 100).toFixed(1)}% match
             </span>
@@ -32,14 +39,16 @@ export default function ResultsList({ results, hasSearched }: Props) {
             "{result.excerpt}"
           </p>
           {result.url && (
-            <a
-              href={result.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800 hover:underline"
-            >
-              View Full Source Document <ExternalLink className="ml-1 h-3 w-3" />
-            </a>
+            <div className="mt-2">
+              <a
+                href={result.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center text-sm font-medium text-teal-600 hover:text-teal-800 hover:underline"
+              >
+                Original Source <ExternalLink className="ml-1 h-3 w-3" />
+              </a>
+            </div>
           )}
         </div>
       ))}

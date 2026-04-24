@@ -27,7 +27,7 @@ export async function loadCorpus() {
   const results: any = {};
 
   for (const file of files) {
-    const key = `corpus_${file}`;
+    const key = `corpus_v3_${file}`;
     let data = await getCached(key);
     if (!data) {
       try {
@@ -153,16 +153,39 @@ export function search(query: string, topK: number = 5): SearchResult[] {
     const doc = documentMetadata[s.index];
     const text = doc.full_text || '';
     
-    let matchIdx = -1;
+    const lowerText = text.toLowerCase();
+    const matchPositions: number[] = [];
     for (const token of tokens) {
-      matchIdx = text.toLowerCase().indexOf(token);
-      if (matchIdx !== -1) break;
+      if (token.length < 3) continue; // Skip short tokens for centering
+      let pos = lowerText.indexOf(token);
+      while (pos !== -1) {
+        matchPositions.push(pos);
+        pos = lowerText.indexOf(token, pos + token.length);
+      }
+    }
+
+    let bestWindowCenter = -1;
+    let maxMatchCount = -1;
+
+    if (matchPositions.length > 0) {
+      matchPositions.sort((a, b) => a - b);
+      for (let j = 0; j < matchPositions.length; j++) {
+        const center = matchPositions[j];
+        let count = 0;
+        for (let k = 0; k < matchPositions.length; k++) {
+          if (Math.abs(matchPositions[k] - center) <= 100) count++;
+        }
+        if (count > maxMatchCount) {
+          maxMatchCount = count;
+          bestWindowCenter = center;
+        }
+      }
     }
 
     let excerpt = '';
-    if (matchIdx !== -1) {
-      const start = Math.max(0, matchIdx - 100);
-      const end = Math.min(text.length, matchIdx + 100);
+    if (bestWindowCenter !== -1) {
+      const start = Math.max(0, bestWindowCenter - 100);
+      const end = Math.min(text.length, bestWindowCenter + 100);
       excerpt = text.substring(start, end).replace(/\n/g, ' ');
       if (start > 0) excerpt = '...' + excerpt;
       if (end < text.length) excerpt = excerpt + '...';

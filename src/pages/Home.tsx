@@ -5,7 +5,7 @@ import SampleImages from '../components/SampleImages';
 import ResultsList from '../components/ResultsList';
 import { search } from '../lib/tfidf';
 import type { SearchResult } from '../lib/tfidf';
-import { loadImage, downscaleImage, preprocessImage, findLargestContour, cropToBoundingBox } from '../lib/cv';
+import { loadImage, downscaleImage, preprocessImage, findLargestContour, applyMask, cropToBoundingBox } from '../lib/cv';
 import OcrWorker from '../workers/ocr.worker?worker';
 
 export default function Home() {
@@ -65,8 +65,10 @@ export default function Home() {
       const contourData = findLargestContour(preprocessed);
 
       let cropMat = downscaled;
+      let maskedMat = null;
       if (contourData) {
-        cropMat = cropToBoundingBox(downscaled, contourData.boundingBox);
+        maskedMat = applyMask(downscaled, contourData.contour);
+        cropMat = cropToBoundingBox(maskedMat, contourData.boundingBox);
       } else {
         console.warn("No strong contour found, using whole image");
       }
@@ -84,7 +86,8 @@ export default function Home() {
       if (downscaled !== mat) downscaled.delete();
       preprocessed.delete();
       if (contourData) contourData.contour.delete();
-      if (cropMat !== downscaled) cropMat.delete();
+      if (maskedMat) maskedMat.delete();
+      if (cropMat !== downscaled && cropMat !== maskedMat) cropMat.delete();
 
       if (!workerRef.current) {
         workerRef.current = new OcrWorker();
@@ -101,7 +104,7 @@ export default function Home() {
           }
 
           if (confidence < 60) {
-            setWarningMsg("Text extraction confidence was low. Results may not match your document accurately.");
+            setWarningMsg("Note: OCR extracted text with moderate confidence. For critical clinical decisions, always verify against the original source documents linked above.");
           }
 
           // Run search with extracted text
@@ -158,14 +161,11 @@ export default function Home() {
         </div>
       )}
 
-      {warningMsg && !isProcessing && hasSearched && (
-        <div className="mt-8 w-full max-w-2xl bg-yellow-50 border-l-4 border-yellow-500 p-4 text-yellow-800 shadow-sm">
-          {warningMsg}
-        </div>
-      )}
-
       <div className="w-full max-w-3xl">
         <ResultsList results={results} hasSearched={hasSearched} />
+        {warningMsg && !isProcessing && hasSearched && (
+          <p className="mt-4 text-xs text-gray-400 italic text-center">{warningMsg}</p>
+        )}
       </div>
     </div>
   );

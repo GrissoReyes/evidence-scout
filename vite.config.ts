@@ -7,7 +7,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg', 'opencv/opencv.js', 'corpus/*', 'samples/*', 'tesseract/*'],
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg', 'corpus/*', 'samples/*'],
       manifest: {
         name: 'Evidence Scout',
         short_name: 'EvScout',
@@ -29,7 +29,9 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,json,wasm,traineddata}']
+        maximumFileSizeToCacheInBytes: 25 * 1024 * 1024,
+        globPatterns: ['**/*.{css,html,ico,png,svg,json,wasm}'],
+        globIgnores: ['**/opencv/**', '**/tesseract/**', '**/node_modules/**']
       }
     })
   ]

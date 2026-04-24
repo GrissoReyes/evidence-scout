@@ -17,7 +17,7 @@ export default function SearchBar({ onSearch, isProcessing }: Props) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="relative w-full max-w-2xl mx-auto">
+    <form onSubmit={handleSubmit} className="relative w-full max-w-4xl mx-auto">
       <div className="relative flex items-center">
         <Search className="absolute left-4 w-5 h-5 text-gray-400" />
         <input
