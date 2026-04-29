@@ -161,10 +161,13 @@ export function search(query: string, topK: number = 5): SearchResult[] {
     
     const lowerText = text.toLowerCase();
     const matchPositions: number[] = [];
+    // Cap at 200 positions to prevent long documents from slowing the excerpt finder.
+    const POSITION_CAP = 200;
     for (const token of tokens) {
       if (token.length < 3) continue; // Skip short tokens for centering
+      if (matchPositions.length >= POSITION_CAP) break;
       let pos = lowerText.indexOf(token);
-      while (pos !== -1) {
+      while (pos !== -1 && matchPositions.length < POSITION_CAP) {
         matchPositions.push(pos);
         pos = lowerText.indexOf(token, pos + token.length);
       }
@@ -175,12 +178,15 @@ export function search(query: string, topK: number = 5): SearchResult[] {
 
     if (matchPositions.length > 0) {
       matchPositions.sort((a, b) => a - b);
+      // O(n) two-pointer sliding window: find the position with the most
+      // other match positions within 100 chars. This replaces the old
+      // O(n^2) double loop that blocked the main thread on long documents.
+      let left = 0;
       for (let j = 0; j < matchPositions.length; j++) {
         const center = matchPositions[j];
-        let count = 0;
-        for (let k = 0; k < matchPositions.length; k++) {
-          if (Math.abs(matchPositions[k] - center) <= 100) count++;
-        }
+        // Advance left pointer to drop positions outside the window
+        while (matchPositions[left] < center - 100) left++;
+        const count = j - left + 1;
         if (count > maxMatchCount) {
           maxMatchCount = count;
           bestWindowCenter = center;

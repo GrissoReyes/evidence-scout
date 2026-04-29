@@ -33,10 +33,17 @@ export default function Home() {
     
     // Simulate slight delay so UI feels responsive before synchronous heavy lifting
     setTimeout(() => {
-      const res = search(query);
-      setResults(res);
-      setHasSearched(true);
-      setIsProcessing(false);
+      try {
+        const res = search(query);
+        setResults(res);
+        setHasSearched(true);
+      } catch (err) {
+        console.error('Search error:', err);
+        setErrorMsg('Search encountered an error. Please try a different query.');
+        setHasSearched(true);
+      } finally {
+        setIsProcessing(false);
+      }
     }, 100);
   };
 
