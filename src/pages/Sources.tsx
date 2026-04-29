@@ -28,6 +28,10 @@ export default function Sources() {
             // Strip OrthoInfo boilerplate: leading "Diseases & Conditions" label
             text = text.replace(/^Diseases\s*&\s*Conditions\s*/i, '').trim();
 
+            // Strip OrthoInfo header garbage like "!header logo Print Email Facebook Twitter..."
+            text = text.replace(/!header logo[^.]*\./gi, '').trim();
+            text = text.replace(/\\\s*\\/g, '').trim();
+
             // Strip OrthoInfo reviewer disclaimer sentence (any sentence containing this phrase)
             text = text.replace(/[^.]*This article was written and\/or reviewed by[^.]*\./gi, '').trim();
 

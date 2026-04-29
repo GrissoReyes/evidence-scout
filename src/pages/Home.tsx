@@ -15,6 +15,7 @@ export default function Home() {
   const [loadingMsg, setLoadingMsg] = useState('');
   const [warningMsg, setWarningMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   
   const workerRef = useRef<Worker | null>(null);
 
@@ -29,6 +30,7 @@ export default function Home() {
   const handleSearch = (query: string) => {
     setWarningMsg('');
     setErrorMsg('');
+    setPreviewUrl(null);
     setIsProcessing(true);
     
     // Simulate slight delay so UI feels responsive before synchronous heavy lifting
@@ -58,10 +60,12 @@ export default function Home() {
       
       let fileToProcess: File;
       if (typeof fileOrUrl === 'string') {
+        setPreviewUrl(fileOrUrl);
         const res = await fetch(fileOrUrl);
         const blob = await res.blob();
         fileToProcess = new File([blob], 'sample.jpg', { type: 'image/jpeg' });
       } else {
+        setPreviewUrl(URL.createObjectURL(fileOrUrl));
         fileToProcess = fileOrUrl;
       }
 
@@ -155,8 +159,14 @@ export default function Home() {
         <SampleImages onSampleSelect={processImage} isProcessing={isProcessing} />
       </div>
 
+      {previewUrl && (isProcessing || hasSearched) && (
+        <div className="mt-8 mb-4 w-full max-w-lg mx-auto">
+          <img src={previewUrl} alt="Document to process" className="w-full h-auto rounded-lg shadow-md border border-gray-200" />
+        </div>
+      )}
+
       {isProcessing && (
-        <div className="mt-12 flex flex-col items-center text-teal-600">
+        <div className="mt-6 flex flex-col items-center text-teal-600">
           <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-teal-600 mb-4"></div>
           <p className="font-medium">{loadingMsg}</p>
         </div>
