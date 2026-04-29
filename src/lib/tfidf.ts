@@ -27,7 +27,7 @@ export async function loadCorpus() {
   const results: any = {};
 
   for (const file of files) {
-    const key = `corpus_v3_${file}`;
+    const key = `corpus_v4_${file}`;
     let data = await getCached(key);
     if (!data) {
       try {
@@ -128,6 +128,11 @@ export function cosineSimilarity(queryVec: Map<number, number>, docVec: Record<s
   return dotProduct;
 }
 
+// Minimum cosine similarity required to show a result.
+// Queries that score below this on every document return an empty array,
+// which the UI treats as "No relevant match found in the current corpus".
+export const SIMILARITY_THRESHOLD = 0.15;
+
 export function search(query: string, topK: number = 5): SearchResult[] {
   if (!vocabulary || !idfValues || !documentVectors || !documentMetadata) {
     return [];
@@ -148,10 +153,11 @@ export function search(query: string, topK: number = 5): SearchResult[] {
   const results: SearchResult[] = [];
   for (let i = 0; i < Math.min(topK, scores.length); i++) {
     const s = scores[i];
-    if (s.score < 0.05) continue; // Similarity floor
+    if (s.score < SIMILARITY_THRESHOLD) continue; // 15% floor
 
     const doc = documentMetadata[s.index];
-    const text = doc.full_text || '';
+    // Support both old field name (full_text) and new field name (cleaned_text)
+    const text = doc.full_text || doc.cleaned_text || '';
     
     const lowerText = text.toLowerCase();
     const matchPositions: number[] = [];
@@ -195,7 +201,8 @@ export function search(query: string, topK: number = 5): SearchResult[] {
 
     results.push({
       title: doc.title,
-      url: doc.source_url || '',
+      // Support both old field name (source_url) and new field name (url)
+      url: doc.source_url || doc.url || '',
       score: s.score,
       excerpt
     });

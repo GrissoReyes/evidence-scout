@@ -12,7 +12,10 @@ export default function ResultsList({ results, hasSearched }: Props) {
   if (results.length === 0) {
     return (
       <div className="mt-8 p-6 bg-white rounded-lg shadow-sm text-center border border-gray-100">
-        <p className="text-gray-500">No strong matches found. Try a different search term or check spelling.</p>
+        <p className="text-gray-700 font-medium">No relevant match found in the current corpus.</p>
+        <p className="text-gray-500 text-sm mt-1">
+          Your query did not reach the 15% similarity threshold. Try rephrasing or using more specific clinical terms.
+        </p>
       </div>
     );
   }

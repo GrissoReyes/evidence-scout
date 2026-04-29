@@ -9,13 +9,21 @@ export default function Sources() {
       .then(res => res.json())
       .then(data => {
         const processed = data.map((doc: any) => {
-          const url = doc.source_url || '';
+          // Support both old field names (source_url, full_text) and new (url, cleaned_text)
+          const url = doc.source_url || doc.url || '';
           const isMedline = url.includes('medlineplus.gov');
-          const org = isMedline ? 'MedlinePlus' : (url.includes('orthoinfo.aaos.org') ? 'OrthoInfo' : 'Unknown Source');
+          const isOrthoInfo = url.includes('orthoinfo.aaos.org');
+          const isAAOS = url.includes('aaos.org');
+          const org = isMedline
+            ? 'MedlinePlus'
+            : (isOrthoInfo || isAAOS)
+              ? 'OrthoInfo / AAOS'
+              : (doc.source || 'Reference');
           
           let desc = 'No description available';
-          if (doc.full_text) {
-            let text = doc.full_text.trim();
+          const rawText = doc.full_text || doc.cleaned_text || '';
+          if (rawText) {
+            let text = rawText.trim();
 
             // Strip OrthoInfo boilerplate: leading "Diseases & Conditions" label
             text = text.replace(/^Diseases\s*&\s*Conditions\s*/i, '').trim();
