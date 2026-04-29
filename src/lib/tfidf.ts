@@ -27,7 +27,7 @@ export async function loadCorpus() {
   const results: any = {};
 
   for (const file of files) {
-    const key = `corpus_v4_${file}`;
+    const key = `corpus_v5_${file}`;
     let data = await getCached(key);
     if (!data) {
       try {
