@@ -39,6 +39,10 @@ export default function Sources() {
             text = text.replace(/A lock \(.*\) or https:\/\/ means you've safely connected to the \.gov website\./gi, '').trim();
             text = text.replace(/A lock \(.*\) or https:\/\/ means you.*safely connected to the/gi, '').trim();
             text = text.replace(/Share sensitive information only on official, secure websites\./gi, '').trim();
+            
+            // NEW: Strip URL fragments leaking from scraping
+            text = text.replace(/\/\/medlineplus\.gov\/[^ ]+\.html?/gi, '').trim();
+            text = text.replace(/^,?\s*secure websites\.?\s*/i, '').trim();
 
             // Strip OrthoInfo reviewer disclaimer sentence (any sentence containing this phrase)
             text = text.replace(/[^.]*This article was written and\/or reviewed by[^.]*\./gi, '').trim();
@@ -57,6 +61,10 @@ export default function Sources() {
 
             if (sentences.length > 0) {
               let selected = sentences[0];
+              
+              // Clean leading punctuation/garbage from the selected sentence
+              selected = selected.replace(/^[!.,;:\-\s]+/, '').trim();
+
               if (selected.length < 40 && sentences.length > 1) {
                 selected += ' ' + sentences[1];
               }
@@ -64,11 +72,12 @@ export default function Sources() {
               if (selected.length < 60 && sentences.length > 0) {
                 // If it's still too short, try taking more characters
                 selected = text.substring(0, 200);
+                selected = selected.replace(/^[!.,;:\-\s]+/, '').trim();
               }
 
               // Defensive check: if the result is still junk or too short
               if (selected.length < 30) {
-                selected = isMedline ? `Clinical reference from MedlinePlus: ${doc.title}` : (doc.title || 'Reference document');
+                selected = isMedline ? `Clinical reference from MedlinePlus on ${doc.title}` : (doc.title || 'Reference document');
               }
               
               if (selected.length > 250) {
@@ -81,8 +90,9 @@ export default function Sources() {
               desc = selected;
             } else {
               desc = text.substring(0, 200) + (text.length > 200 ? '...' : '');
+              desc = desc.replace(/^[!.,;:\-\s]+/, '').trim();
               if (desc.length < 30) {
-                desc = isMedline ? `Clinical reference from MedlinePlus: ${doc.title}` : (doc.title || 'Reference document');
+                desc = isMedline ? `Clinical reference from MedlinePlus on ${doc.title}` : (doc.title || 'Reference document');
               }
             }
           }

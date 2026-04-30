@@ -194,15 +194,23 @@ export function search(query: string, topK: number = 5): SearchResult[] {
       }
     }
 
+    const cleanExcerpt = (str: string) => {
+      return str
+        .replace(/\\+/g, ' ') // Collapse backslashes to single space
+        .replace(/^\s*[(".;!)]+\s*/, '') // Remove stray artifacts at start
+        .replace(/\s+/g, ' ') // Collapse multiple whitespace
+        .trim();
+    };
+
     let excerpt = '';
     if (bestWindowCenter !== -1) {
       const start = Math.max(0, bestWindowCenter - 100);
       const end = Math.min(text.length, bestWindowCenter + 100);
-      excerpt = text.substring(start, end).replace(/\n/g, ' ');
+      excerpt = cleanExcerpt(text.substring(start, end));
       if (start > 0) excerpt = '...' + excerpt;
       if (end < text.length) excerpt = excerpt + '...';
     } else {
-      excerpt = text.substring(0, 200).replace(/\n/g, ' ') + '...';
+      excerpt = cleanExcerpt(text.substring(0, 200)) + '...';
     }
 
     results.push({
