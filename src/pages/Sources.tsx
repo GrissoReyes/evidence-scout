@@ -23,7 +23,10 @@ export default function Sources() {
           let desc = 'No description available';
           const rawText = doc.full_text || doc.cleaned_text || '';
           if (rawText) {
-            let text = rawText.trim();
+            let text = rawText.trim()
+              .replace(/%3A/g, ':')
+              .replace(/%20/g, ' ')
+              .replace(/%0A/g, ' ');
 
             // Strip OrthoInfo boilerplate: leading "Diseases & Conditions" label
             text = text.replace(/^Diseases\s*&\s*Conditions\s*/i, '').trim();

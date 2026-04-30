@@ -157,7 +157,10 @@ export function search(query: string, topK: number = 5): SearchResult[] {
 
     const doc = documentMetadata[s.index];
     // Support both old field name (full_text) and new field name (cleaned_text)
-    const text = doc.full_text || doc.cleaned_text || '';
+    const text = (doc.full_text || doc.cleaned_text || '')
+      .replace(/%3A/g, ':')
+      .replace(/%20/g, ' ')
+      .replace(/%0A/g, ' ');
     
     const lowerText = text.toLowerCase();
     const matchPositions: number[] = [];
