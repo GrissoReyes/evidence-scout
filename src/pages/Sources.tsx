@@ -56,7 +56,8 @@ export default function Sources() {
               !s.includes('LockLocked') &&
               !s.includes('official, secure websites') &&
               !s.includes('safely connected to') &&
-              !s.includes('official government organization')
+              !s.includes('official government organization') &&
+              !s.toLowerCase().includes('secure websites')
             );
 
             if (sentences.length > 0) {
