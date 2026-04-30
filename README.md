@@ -3,14 +3,14 @@
 A clinical reference search application for nurses and patients, built with TF-IDF, cosine similarity, and Tesseract OCR, deployed entirely in the browser.
 
 [![Live App](https://img.shields.io/badge/Live%20App-Netlify-teal?style=for-the-badge)](https://evidence-scout.netlify.app)
-[![License: TBD](https://img.shields.io/badge/License-TBD-gray?style=for-the-badge)](#license)
+[![License: Course Project](https://img.shields.io/badge/License-Course%20Project-gray?style=for-the-badge)](#license)
 
 ## Quick Links
 *   **Live Application:** [https://evidence-scout.netlify.app](https://evidence-scout.netlify.app)
 *   **Source Code:** [https://github.com/GrissoReyes/evidence-scout](https://github.com/GrissoReyes/evidence-scout)
 
 ## About
-Evidence Scout is a privacy-first clinical search tool designed for bedside nurses and patients. The application provides two primary ways to find information: a typed clinical search and an image upload feature that uses OCR to digitize printed handouts. All searches are ranked using TF-IDF and cosine similarity against a curated 19-document corpus sourced from MedlinePlus and OrthoInfo. A critical 0.15 similarity floor ensures that low-confidence or out-of-scope results are suppressed for safety. The system is designed to serve both clinicians and patients from the same lightweight browser-based engine.
+Evidence Scout is a privacy-first clinical search tool designed for bedside nurses, with future patient-facing potential. The same TF-IDF and OCR engine is architected to serve patient-facing applications in future iterations. The application provides two primary ways to find information: a typed clinical search and an image upload feature that uses OCR to digitize printed handouts. All searches are ranked using TF-IDF and cosine similarity against a curated 19-document corpus sourced from MedlinePlus and OrthoInfo. A critical 0.15 similarity floor ensures that low-confidence or out-of-scope results are suppressed for safety. The system is designed to serve both clinicians and patients from the same lightweight browser-based engine.
 
 ## Author
 *   **Author:** Grissobelle Reyes-Obando, BSN RN MEDSURG-BC
@@ -40,7 +40,7 @@ Evidence Scout follows a two-stage architecture:
 1.  **Offline Preprocessing:** A Python-based pipeline (Google Colab) scrapes clinical sources, cleans the text, and computes global IDF values and document vectors. These are exported as JSON files to `public/corpus/`.
 2.  **Online Search:** The browser-based JavaScript engine loads these JSON files, caches them in IndexedDB, and performs real-time TF-IDF vectorization and cosine similarity on user queries locally. 
 
-This design eliminates the need for a server and ensures 100 percent data privacy.
+This design eliminates the need for a server. No user-entered queries, uploaded images, or OCR-extracted text are sent to a backend server or third-party API.
 
 ## Repository Structure
 ```
@@ -76,6 +76,15 @@ cv_test_results.md  # 20-image Computer Vision evaluation matrix
 *   **Safety Check:** 100 percent correct floor behavior (triggering no-match) on negative and out-of-scope tests.
 *   **Detailed Matrix:** See [cv_test_results.md](cv_test_results.md) for full results.
 
+## How to Grade This Project
+For graders evaluating this submission, the following files map directly to each deliverable:
+
+*   **NLP work:** see evidence_scout_final.ipynb (preprocessing pipeline, MRR evaluation) and src/lib/tfidf.ts (production TF-IDF and cosine similarity engine)
+*   **Computer Vision work:** see the image upload feature on the live application, cv_test_results.md (20-image evaluation matrix), and cv_evaluation_images/ (clinical reference images used in evaluation)
+*   **Live demonstration:** https://evidence-scout.netlify.app
+*   **Evaluation methodology:** Section 8 of the NLP and CV final project reports, with MRR scoring on typed queries and a 20-image matrix on Computer Vision input
+*   **Source code:** src/ directory for the React application, clean_corpus.py for offline preprocessing, public/corpus/ for the curated 19-document corpus
+
 ## Safety Design
 The 0.15 similarity floor is the most important safety feature of the application. Unlike general-purpose search engines that always attempt to return a top result, a clinical tool must know when to fail. The similarity floor allows the application to suppress results when the OCR quality is too low or the query is entirely outside the scope of the clinical corpus, preventing the display of misleading or irrelevant medical information.
 
@@ -88,4 +97,4 @@ The 0.15 similarity floor is the most important safety feature of the applicatio
 Thank you to Dr. Ernesto Lee for the methodology and the FeNAgO platform foundation. This project was built with the assistance of agentic tools including Antigravity, Claude, and Gemini. Clinical content is curated from MedlinePlus and OrthoInfo (AAOS).
 
 ## License
-License: TBD. Code is provided as a course project deliverable for Miami Dade College.
+License: Course project deliverable. All clinical content belongs to original source organizations (MedlinePlus / National Library of Medicine, OrthoInfo / American Academy of Orthopaedic Surgeons). Code is provided as a Miami Dade College academic submission.
