@@ -101,7 +101,7 @@ export default function Sources() {
 
   return (
     <div className="max-w-4xl mx-auto mt-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">Sources</h1>
+      <h1 className="text-3xl font-bold text-gray-900 mb-2">Sources (Updated)</h1>
       <p className="text-gray-600 mb-8">The Evidence Scout Phase 1 corpus consists of the following {sources.length} reference documents.</p>
       
       {sources.length === 0 ? (
