@@ -4,14 +4,15 @@
 This document details the end-to-end evaluation of the Evidence Scout system using OCR and the identical TF-IDF pipeline used in production.
 
 ### Summary
-- **Total images tested:** 16
-- **Number with confident match (top result >= 0.15):** 13
-- **Number that triggered the no-match floor (< 0.15):** 3
-- **Average top-match score (confident):** 0.495
+- **Total images tested:** 20
+- **Number with confident match (top result >= 0.15):** 15
+- **Number that triggered the no-match floor (< 0.15):** 5
+- **Average top-match score (confident):** 0.477
 
 ### Breakdown by Type
 - **Original:** 4/6 confident matches
 - **Replacement:** 9/10 confident matches
+- **Phone Photo:** 3/4 confident matches
 
 ### Performance Observations
 - **Success:** Images with clear, printed text matched perfectly against the corpus because Tesseract correctly extracted exact clinical terms (e.g., 'rotator cuff').
@@ -42,3 +43,7 @@ This document details the end-to-end evaluation of the Evidence Scout system usi
 | 14 | Original | Test Image 4.jpg | Clinical document (370 chars) | Printable Tennis Elbow Exercise Guide PDF | Instan... | 370 | Rotator Cuff Rehab Exercises (AAOS) | 0.140 | Tennis Elbow (Lateral Epicondylitis) | 0.112 | Using Your Shoulder After Surgery | 0.090 | Yes | Yes (filtered) |
 | 15 | Original | Test Image 5.jpg | Clinical document (673 chars) | SHOULDER IMPINGEMENT ..-< ~~ Acromion S Inflamed B... | 673 | Rotator Cuff Problems | 0.261 | Rotator Cuff Injuries: Overview | 0.219 | Rotator Cuff Exercises | 0.207 | No | Yes |
 | 16 | Original | Test Image 7.jpeg | Clinical document (205 chars) | Rotator Cuff Strain Rehabilitation Exercises Resis... | 205 | Rotator Cuff Exercises | 0.237 | Rotator Cuff Rehab Exercises (AAOS) | 0.218 | Rotator Cuff - Self-Care | 0.157 | No | Yes |
+| 17 | Phone Photo | phone_cedars_dequervains.jpeg | Clinical document (692 chars) | 7:56 9 ul > [5 —| De Quervain’s Tenosynovitis: Inflammation Disrupts Harmony De Quervain’s tenosynovitis disrupts your wrist’s harmonious system. Inflammation within the sheath narrows the space in the tunnel,... | 692 | Shoulder Pain: Common Problems | 0.108 | Golfer's Elbow (Medial Epicondylitis) | 0.087 | Joint Range of Motion | 0.086 | Yes | Yes (filtered) |
+| 18 | Phone Photo | phone_mayo_wrist_pain.jpeg | Clinical document (791 chars) | Symptoms Wrist pain may vary, depending on the cause. For example, osteoarthritis pain often is described as being similar to a dull toothache. Carpal tunnel syndrome usually causes a pins... | 791 | Sprains and Strains | 0.159 | Rotator Cuff Problems | 0.152 | Shoulder Pain: Common Problems | 0.150 | No | Yes |
+| 19 | Phone Photo | phone_shoulder_arthroscopy.jpeg | Clinical document (2004 chars) | BONE & JOINT INSTITUTE SHOULDER ARTHROSCOPY DISCHARGE INSTRUCTIONS Scapula Supraspinatus muscle & 7 Supraspinatus tendon \ \ er’ 4 (Rotator cuff) z= \ L ~~ —— Deltoid muscle /d NU... | 2004 | Rotator Cuff Repair - Recovery | 0.339 | Rotator Cuff Problems | 0.334 | Shoulder Surgery - Discharge | 0.316 | No | Yes |
+| 20 | Phone Photo | phone_uptodate_shoulder.jpeg | Clinical document (806 chars) | Evaluation of the adult with shoulder co... INTRODUCTION Shoulder pain is a common musculoskeletal complaint that may be due either to intrinsic disorders of the shoulder or referred pain. The... | 806 | Shoulder Pain: Common Problems | 0.447 | Frozen Shoulder (Adhesive Capsulitis) | 0.406 | Rotator Cuff Exercises | 0.397 | No | Yes |
