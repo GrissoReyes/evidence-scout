@@ -33,9 +33,9 @@ export default function Sources() {
             text = text.replace(/\\\s*\\/g, '').trim();
 
             // Strip MedlinePlus boilerplate footer/header text
-            text = text.replace(/A \.gov website belongs to an official government organization in the United States\./gi, '').trim();
-            text = text.replace(/Official websites use \.gov\./gi, '').trim();
-            text = text.replace(/Secure \.gov websites use HTTPS\./gi, '').trim();
+            text = text.replace(/[^.]*\.gov website belongs to[^.]*\./gi, '').trim();
+            text = text.replace(/[^.]*Official websites use \.gov[^.]*\./gi, '').trim();
+            text = text.replace(/[^.]*Secure \.gov websites use HTTPS[^.]*\./gi, '').trim();
             text = text.replace(/A lock \(.*\) or https:\/\/ means you've safely connected to the \.gov website\./gi, '').trim();
             text = text.replace(/A lock \(.*\) or https:\/\/ means you.*safely connected to the/gi, '').trim();
             text = text.replace(/Share sensitive information only on official, secure websites\./gi, '').trim();
@@ -48,10 +48,11 @@ export default function Sources() {
             
             // Filter out any remaining boilerplate sentences
             sentences = sentences.filter(s => 
-              !s.includes('.gov website belongs to') &&
+              !s.includes('.gov website') &&
               !s.includes('LockLocked') &&
               !s.includes('official, secure websites') &&
-              !s.includes('safely connected to')
+              !s.includes('safely connected to') &&
+              !s.includes('official government organization')
             );
 
             if (sentences.length > 0) {
