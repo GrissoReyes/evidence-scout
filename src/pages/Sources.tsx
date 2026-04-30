@@ -47,7 +47,7 @@ export default function Sources() {
             let sentences = text.split(/(?<=\.)(?=\s|\n)/).map((s: string) => s.trim()).filter(Boolean);
             
             // Filter out any remaining boilerplate sentences
-            sentences = sentences.filter(s => 
+            sentences = sentences.filter((s: string) => 
               !s.includes('.gov website') &&
               !s.includes('LockLocked') &&
               !s.includes('official, secure websites') &&
@@ -101,7 +101,7 @@ export default function Sources() {
 
   return (
     <div className="max-w-4xl mx-auto mt-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">Sources (Updated)</h1>
+      <h1 className="text-3xl font-bold text-gray-900 mb-2">Sources</h1>
       <p className="text-gray-600 mb-8">The Evidence Scout Phase 1 corpus consists of the following {sources.length} reference documents.</p>
       
       {sources.length === 0 ? (
