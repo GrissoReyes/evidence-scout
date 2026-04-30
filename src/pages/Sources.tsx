@@ -32,20 +32,42 @@ export default function Sources() {
             text = text.replace(/!header logo[^.]*\./gi, '').trim();
             text = text.replace(/\\\s*\\/g, '').trim();
 
+            // Strip MedlinePlus boilerplate footer/header text
+            text = text.replace(/A \.gov website belongs to an official government organization in the United States\./gi, '').trim();
+            text = text.replace(/Official websites use \.gov\./gi, '').trim();
+            text = text.replace(/Secure \.gov websites use HTTPS\./gi, '').trim();
+            text = text.replace(/A lock \(.*\) or https:\/\/ means you've safely connected to the \.gov website\./gi, '').trim();
+            text = text.replace(/A lock \(.*\) or https:\/\/ means you.*safely connected to the/gi, '').trim();
+            text = text.replace(/Share sensitive information only on official, secure websites\./gi, '').trim();
+
             // Strip OrthoInfo reviewer disclaimer sentence (any sentence containing this phrase)
             text = text.replace(/[^.]*This article was written and\/or reviewed by[^.]*\./gi, '').trim();
 
             // Split by period followed by space or newline
-            const sentences = text.split(/(?<=\.)(?=\s|\n)/).map((s: string) => s.trim()).filter(Boolean);
+            let sentences = text.split(/(?<=\.)(?=\s|\n)/).map((s: string) => s.trim()).filter(Boolean);
             
+            // Filter out any remaining boilerplate sentences
+            sentences = sentences.filter(s => 
+              !s.includes('.gov website belongs to') &&
+              !s.includes('LockLocked') &&
+              !s.includes('official, secure websites') &&
+              !s.includes('safely connected to')
+            );
+
             if (sentences.length > 0) {
               let selected = sentences[0];
               if (selected.length < 40 && sentences.length > 1) {
                 selected += ' ' + sentences[1];
               }
               
-              if (selected.length < 60) {
+              if (selected.length < 60 && sentences.length > 0) {
+                // If it's still too short, try taking more characters
                 selected = text.substring(0, 200);
+              }
+
+              // Defensive check: if the result is still junk or too short
+              if (selected.length < 30) {
+                selected = isMedline ? `Clinical reference from MedlinePlus: ${doc.title}` : (doc.title || 'Reference document');
               }
               
               if (selected.length > 250) {
@@ -58,6 +80,9 @@ export default function Sources() {
               desc = selected;
             } else {
               desc = text.substring(0, 200) + (text.length > 200 ? '...' : '');
+              if (desc.length < 30) {
+                desc = isMedline ? `Clinical reference from MedlinePlus: ${doc.title}` : (doc.title || 'Reference document');
+              }
             }
           }
           
