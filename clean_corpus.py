@@ -14,7 +14,8 @@ def comprehensive_clean(text):
     # 2. Strip specific junk patterns
     
     # Full URLs matching clinical domains or listservs
-    text = re.sub(r'https?://(?:medlineplus\.gov|orthoinfo\.aaos\.org|[\w\.]+\.gov/listserv)\S*', '', text, flags=re.IGNORECASE)
+    # Catch both with and without protocol (http/https)
+    text = re.sub(r'(?:https?://)?(?:medlineplus\.gov|orthoinfo\.aaos\.org|[\w\.]+\.gov/listserv)\S*', '', text, flags=re.IGNORECASE)
     
     # Listserv signup text sentences
     text = re.sub(r'[^.!?\n]*To get updates by email when new information becomes available[^.!?\n]*[.!?]?', '', text, flags=re.IGNORECASE)
